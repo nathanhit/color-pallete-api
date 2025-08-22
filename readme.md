@@ -9,7 +9,7 @@ Generate cohesive color palettes from text (e.g., locations) using a low-cost Op
 ### Setup
 1) Configure environment
 ```bash
-cp .env.example .env
+touch .env
 # Edit .env and set OPENAI_API_KEY=<your_key>
 # Optional: change PORT (default 3000)
 # Optional: tune rate limit via RATE_WINDOW_MS and RATE_MAX
