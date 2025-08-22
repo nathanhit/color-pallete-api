@@ -9,9 +9,9 @@
     "./server": "./src/server.js"
   },
   "scripts": {
-    "start": "node src/server.js",
-    "start:prod": "NODE_ENV=production node src/server.js",
-    "dev": "node src/server.js",
+    "start": "node src/server-start.js",
+    "start:prod": "NODE_ENV=production node src/server-start.js",
+    "dev": "node src/server-start.js",
     "example": "node examples/usage.js",
     "test": "echo \"No tests yet\" && exit 0"
   },

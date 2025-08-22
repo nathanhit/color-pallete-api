@@ -34,53 +34,15 @@ async function clientExample() {
   }
 }
 
-// Example 3: React component usage
-export function ColorPaletteGenerator() {
-  const [palette, setPalette] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const generatePalette = async (description) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const colors = await getColorPalette(description, 5);
-      setPalette(colors);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <button
-        onClick={() => generatePalette("tropical paradise")}
-        disabled={loading}
-      >
-        {loading ? 'Generating...' : 'Generate Palette'}
-      </button>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-        {palette.map((color, index) => (
-          <div
-            key={index}
-            style={{
-              backgroundColor: color,
-              width: '50px',
-              height: '50px',
-              border: '1px solid #ccc'
-            }}
-            title={color}
-          />
-        ))}
-      </div>
-    </div>
-  );
+// Example 3: Simple color palette display (console-based)
+function displayPalette(colors, description) {
+  console.log(`\n🎨 Color Palette for "${description}":`);
+  colors.forEach((color, index) => {
+    console.log(`  ${index + 1}. ${color}`);
+  });
+  console.log('\nYou can use these colors in your HTML/CSS:');
+  console.log('background-color:', colors[0]);
+  console.log('color:', colors[colors.length - 1] || colors[0]);
 }
 
 // Example 4: Node.js backend usage
@@ -107,10 +69,27 @@ export async function generateThemeColors(req, res) {
 
 // Run examples if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  console.log("Running Color Palette API examples...\n");
+  console.log("🎨 Running Color Palette API Examples...\n");
 
-  simpleExample().then(() => {
-    console.log("\n---\n");
-    return clientExample();
+  simpleExample().then(async () => {
+    console.log("\n" + "=".repeat(50) + "\n");
+
+    const client = new ColorPaletteClient();
+
+    try {
+      console.log("📋 Example 2: Using ColorPaletteClient");
+      const colors = await client.generate("mountain lake", 4);
+      displayPalette(colors, "mountain lake");
+
+      console.log("\n" + "=".repeat(50) + "\n");
+
+      console.log("📊 Example 3: With Metadata");
+      const paletteData = await client.generateWithMetadata("desert sunset", 3);
+      displayPalette(paletteData.colors, paletteData.description);
+      console.log(`Generated: ${paletteData.timestamp}`);
+
+    } catch (error) {
+      console.error("Failed to generate palette:", error.message);
+    }
   }).catch(console.error);
 }
