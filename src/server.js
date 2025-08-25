@@ -1,3 +1,4 @@
+// This is our actual API call - everything else is just infrastructure
 import 'dotenv/config';
 import OpenAI from 'openai';
 
@@ -47,6 +48,7 @@ async function generatePalette({ text, count }) {
     'Ensure all hex codes are valid 6-digit values.'
   ].join(' ');
 
+  // 🎯 THIS IS THE ONLY API CALL WE MAKE:
   const completion = await openai.chat.completions.create({
     model: 'gpt-4.1-nano-2025-04-14',
     temperature: 0.2,
