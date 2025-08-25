@@ -2,12 +2,7 @@
 import 'dotenv/config';
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
-const openaiApiKey = process.env.OPENAI_API_KEY;
-if (!openaiApiKey) {
-  console.warn('Warning: OPENAI_API_KEY not set. The palette functions will fail until it is set.');
-}
-const openai = new OpenAI({ apiKey: openaiApiKey });
+// OpenAI client will be created per request with user's API key
 
 // Utility functions
 function normalizeHex(hex) {
@@ -25,7 +20,12 @@ function ensureHexArray(value) {
 }
 
 // Core palette generation function
-async function generatePalette({ text, count }) {
+async function generatePalette({ text, count, apiKey }) {
+  // Create OpenAI client with user's API key
+  if (!apiKey) {
+    throw new Error('OpenAI API key is required. Provide it via environment variable or function parameter.');
+  }
+  const openai = new OpenAI({ apiKey });
   let desired = Number.isFinite(count) ? Math.round(count) : 5;
   if (desired < 5) desired = 5;
   if (desired > 8) desired = 8;

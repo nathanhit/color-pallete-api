@@ -31,11 +31,20 @@ export function startServer() {
 
   app.post('/palette', async (req, res) => {
     try {
-      const { text, count } = req.body ?? {};
+      const { text, count, apiKey } = req.body ?? {};
       if (typeof text !== 'string' || text.trim().length === 0) {
         return res.status(400).json({ error: 'text is required' });
       }
-      const { result, error } = await generatePalette({ text, count });
+
+      // Use API key from request body, or fall back to environment variable
+      const userApiKey = apiKey || process.env.OPENAI_API_KEY;
+      if (!userApiKey) {
+        return res.status(401).json({
+          error: 'OpenAI API key is required. Provide it in request body or set OPENAI_API_KEY environment variable.'
+        });
+      }
+
+      const { result, error } = await generatePalette({ text, count, apiKey: userApiKey });
       if (error) return res.status(error.status).json({ error: error.message });
       return res.json(result);
     } catch (err) {
@@ -48,10 +57,21 @@ export function startServer() {
     try {
       const text = typeof req.query.text === 'string' ? req.query.text : '';
       const count = req.query.count ? Number(req.query.count) : undefined;
+      const apiKey = req.query.apiKey; // Allow API key in query params (less secure)
+
       if (text.trim().length === 0) {
         return res.status(400).json({ error: 'text is required' });
       }
-      const { result, error } = await generatePalette({ text, count });
+
+      // Use API key from query param, or fall back to environment variable
+      const userApiKey = apiKey || process.env.OPENAI_API_KEY;
+      if (!userApiKey) {
+        return res.status(401).json({
+          error: 'OpenAI API key is required. Provide it in query params or set OPENAI_API_KEY environment variable.'
+        });
+      }
+
+      const { result, error } = await generatePalette({ text, count, apiKey: userApiKey });
       if (error) return res.status(error.status).json({ error: error.message });
       return res.json(result);
     } catch (err) {
